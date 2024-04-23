@@ -1,23 +1,20 @@
 const fs = require("fs");
+const readline = require("readline");
 
-let obj = {
-	solutions: [],
+const processLine = async () => {
+	const fileStream = fs.createReadStream("english.txt");
+	const output = fs.createWriteStream("wordlist.txt");
+
+	const rl = readline.createInterface({
+		input: fileStream,
+		crlfDelay: Infinity,
+	});
+
+	for await (const line of rl) {
+		if (line.length === 5 && /^[A-Za-z]+$/.test(line)) {
+			output.write(line + "\n");
+		}
+	}
 };
 
-fs.readFile("test.txt", (err, data) => {
-	if (err) throw err;
-
-	var words = data.toString();
-	words = words.split("\r\n");
-
-	let i = 1;
-	words = words.map((el) => {
-		if (el.length === 5 && /^[A-Za-z]+$/.test(el)) {
-			obj.solutions.push({ key: i++, word: el });
-		}
-	});
-
-	fs.writeFile("wordlist.json", JSON.stringify(obj), (err) => {
-		if (err) throw err;
-	});
-});
+processLine();
